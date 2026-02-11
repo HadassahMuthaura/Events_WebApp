@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import { FiGrid, FiCalendar, FiFileText, FiUsers, FiSettings, FiLogOut, FiMenu, FiX, FiPlus } from 'react-icons/fi'
+import { FiGrid, FiCalendar, FiFileText, FiUsers, FiSettings, FiLogOut, FiMenu, FiX, FiPlus, FiCreditCard } from 'react-icons/fi'
 import { useAuthStore } from '../../store/authStore'
 import { useSidebar } from '../../contexts/SidebarContext'
 
@@ -18,12 +18,15 @@ export default function DashboardSidebar() {
   // Show Create Event only for organizers, admins, and superadmins
   const canCreateEvent = user?.role === 'organizer' || user?.role === 'admin' || user?.role === 'superadmin'
 
+  const canManageUsers = user?.role === 'admin' || user?.role === 'superadmin';
   const menuItems = [
     { icon: FiGrid, label: 'Overview', href: '/dashboard' },
     ...(canCreateEvent ? [{ icon: FiPlus, label: 'Create Event', href: '/dashboard/create-event' }] : []),
     { icon: FiCalendar, label: 'Browse Event', href: '/events' },
+    { icon: FiCreditCard, label: 'My Tickets', href: '/dashboard/my-tickets' },
     { icon: FiFileText, label: 'Event Details', href: '/dashboard/event-details' },
     { icon: FiUsers, label: 'Attendee Insights', href: '/dashboard/attendee-insights' },
+    ...(canManageUsers ? [{ icon: FiUsers, label: 'Manage Users', href: '/dashboard/admin/users' }] : []),
   ]
   
   return (
@@ -54,6 +57,7 @@ export default function DashboardSidebar() {
           const isActive = router.pathname === item.href || 
                           (item.href === '/dashboard' && router.pathname === '/dashboard') ||
                           (item.href === '/events' && router.pathname.startsWith('/events')) ||
+                          (item.href === '/dashboard/my-tickets' && router.pathname === '/dashboard/my-tickets') ||
                           (item.href === '/dashboard/event-details' && router.pathname === '/dashboard/event-details') ||
                           (item.href === '/dashboard/attendee-insights' && router.pathname === '/dashboard/attendee-insights')
           

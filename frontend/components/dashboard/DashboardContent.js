@@ -335,10 +335,10 @@ export default function DashboardContent() {
               ))
             ) : upcomingEvents.length > 0 ? (
               visibleEvents.map((event) => (
-                <a
+                <div
                   key={event.id}
-                  href={`/events/${event.id}`}
-                  className="relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group h-56"
+                  className="relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group h-56 cursor-pointer"
+                  onClick={() => window.location.href = `/dashboard/edit-event/${event.id}`}
                 >
                   <img
                     src={event.image_url || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=500'}
@@ -350,7 +350,7 @@ export default function DashboardContent() {
                     <h3 className="text-white font-bold text-sm mb-1 line-clamp-2">{event.title}</h3>
                     <p className="text-white text-xs opacity-90">{new Date(event.date).toLocaleDateString()}</p>
                   </div>
-                </a>
+                </div>
               ))
             ) : (
               // No events message

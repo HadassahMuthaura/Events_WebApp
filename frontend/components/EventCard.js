@@ -1,11 +1,9 @@
-import Link from 'next/link'
 import { format } from 'date-fns'
 import { FiCalendar, FiMapPin, FiDollarSign } from 'react-icons/fi'
 
 export default function EventCard({ event }) {
   return (
-    <Link href={`/events/${event.id}`}>
-      <div className="card hover:scale-105 transition-transform cursor-pointer">
+    <div className="card hover:shadow-xl transition-shadow">
         {/* Image */}
         <div className="h-48 bg-gradient-to-r from-primary-400 to-primary-600 relative">
           {event.image_url ? (
@@ -50,6 +48,5 @@ export default function EventCard({ event }) {
           </div>
         </div>
       </div>
-    </Link>
   )
 }

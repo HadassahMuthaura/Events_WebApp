@@ -6,7 +6,7 @@ import { toast } from 'react-toastify'
 export default function EventsList({ searchQuery = '', category = null }) {
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
-  const [pagination, setPagination] = useState({ page: 1, limit: 12 })
+  const [pagination, setPagination] = useState({ page: 1, limit: 100 })
 
   useEffect(() => {
     fetchEvents()
@@ -20,6 +20,7 @@ export default function EventsList({ searchQuery = '', category = null }) {
           page: pagination.page,
           limit: pagination.limit,
           upcoming: true,
+          status: 'active',
           search: searchQuery || undefined,
           category: category || undefined
         }

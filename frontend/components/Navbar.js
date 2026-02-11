@@ -14,6 +14,21 @@ export default function Navbar() {
     router.push('/')
   }
 
+  const handleEventsClick = (e) => {
+    e.preventDefault()
+    if (router.pathname === '/') {
+      // Already on homepage, just scroll
+      const eventsSection = document.getElementById('events-section')
+      if (eventsSection) {
+        eventsSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    } else {
+      // Navigate to homepage with hash
+      router.push('/#events-section')
+    }
+    setIsOpen(false)
+  }
+
   return (
     <nav className="bg-white shadow-md">
       <div className="container mx-auto px-4">
@@ -25,9 +40,9 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/events" className="text-gray-700 hover:text-primary-600 transition">
+            <a href="#events-section" onClick={handleEventsClick} className="text-gray-700 hover:text-primary-600 transition cursor-pointer">
               Events
-            </Link>
+            </a>
             {isAuthenticated ? (
               <>
                 <Link href="/dashboard" className="text-gray-700 hover:text-primary-600 transition">
@@ -77,9 +92,9 @@ export default function Navbar() {
         {isOpen && (
           <div className="md:hidden py-4 border-t">
             <div className="flex flex-col space-y-4">
-              <Link href="/events" className="text-gray-700 hover:text-primary-600">
+              <a href="#events-section" onClick={handleEventsClick} className="text-gray-700 hover:text-primary-600 cursor-pointer">
                 Events
-              </Link>
+              </a>
               {isAuthenticated ? (
                 <>
                   <Link href="/dashboard" className="text-gray-700 hover:text-primary-600">

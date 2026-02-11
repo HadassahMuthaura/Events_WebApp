@@ -174,7 +174,7 @@ export const sendEventReminder = async (booking, user, event, hoursUntil) => {
               <p>We're looking forward to seeing you there! Please arrive 15 minutes early.</p>
               
               <center>
-                <a href="${process.env.FRONTEND_URL}/events/${event.id}" class="button">View Event Details</a>
+                <a href="${process.env.FRONTEND_URL}/dashboard/my-tickets" class="button">View My Tickets</a>
               </center>
               
               <div class="footer">

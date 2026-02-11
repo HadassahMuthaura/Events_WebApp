@@ -402,15 +402,12 @@ export default function EventsPage() {
 
                         {/* Footer */}
                         <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                          <button
-                            onClick={() => router.push(`/events/${event.id}`)}
-                            className="px-4 py-1.5 bg-indigo-900 text-white rounded-lg font-medium hover:bg-indigo-800 transition text-xs"
-                          >
-                            See Details
-                          </button>
                           <div className="flex items-center text-xs text-gray-500">
                             <FiUsers className="mr-1" size={14} />
-                            <span>{event.total_tickets || 0}</span>
+                            <span>{event.total_tickets || 0} total tickets</span>
+                          </div>
+                          <div className="text-xs font-semibold text-indigo-900">
+                            {event.price === 0 ? 'Free Event' : `$${event.price}`}
                           </div>
                         </div>
                       </div>

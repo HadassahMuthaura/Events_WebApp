@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Layout from '../components/Layout'
 import Hero from '../components/Hero'
@@ -10,6 +10,18 @@ import { FiTrendingUp, FiCalendar, FiUsers, FiStar } from 'react-icons/fi'
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState(null)
+
+  useEffect(() => {
+    // Handle scroll to events section when coming from another page with hash
+    if (window.location.hash === '#events-section') {
+      setTimeout(() => {
+        const eventsSection = document.getElementById('events-section')
+        if (eventsSection) {
+          eventsSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+      }, 100)
+    }
+  }, [])
 
   const stats = [
     { icon: FiCalendar, label: 'Events Hosted', value: '1,000+', color: 'from-blue-500 to-blue-600' },
@@ -63,7 +75,9 @@ export default function Home() {
         </section>
 
         {/* Events List */}
-        <EventsList searchQuery={searchQuery} category={selectedCategory} />
+        <div id="events-section">
+          <EventsList searchQuery={searchQuery} category={selectedCategory} />
+        </div>
 
         {/* CTA Section */}
         <section className="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-16">
@@ -76,9 +90,17 @@ export default function Home() {
               <a href="/auth/register" className="bg-white text-primary-600 hover:bg-gray-100 px-8 py-4 rounded-lg font-bold transition inline-block">
                 Get Started Free
               </a>
-              <a href="/events" className="border-2 border-white hover:bg-white hover:text-primary-600 px-8 py-4 rounded-lg font-bold transition inline-block">
+              <button 
+                onClick={() => {
+                  const eventsSection = document.getElementById('events-section')
+                  if (eventsSection) {
+                    eventsSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                  }
+                }}
+                className="border-2 border-white hover:bg-white hover:text-primary-600 px-8 py-4 rounded-lg font-bold transition inline-block"
+              >
                 Explore Events
-              </a>
+              </button>
             </div>
           </div>
         </section>
