@@ -3,7 +3,7 @@ import { supabase } from '../config/supabase.js';
 
 export const getAllEvents = async (req, res) => {
   try {
-    const { page = 1, limit = 10, category, upcoming } = req.query;
+    const { page = 1, limit = 10, category, upcoming, status, search } = req.query;
     const offset = (page - 1) * limit;
 
     let query = supabase
@@ -16,6 +16,14 @@ export const getAllEvents = async (req, res) => {
 
     if (upcoming === 'true') {
       query = query.gte('date', new Date().toISOString());
+    }
+
+    if (status) {
+      query = query.eq('status', status);
+    }
+
+    if (search) {
+      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%,location.ilike.%${search}%`);
     }
 
     const { data: events, error, count } = await query
@@ -110,7 +118,7 @@ export const updateEvent = async (req, res) => {
       return res.status(404).json({ error: 'Event not found' });
     }
 
-    if (existingEvent.organizer_id !== req.user.id && req.user.role !== 'admin') {
+    if (existingEvent.organizer_id !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'superadmin') {
       return res.status(403).json({ error: 'Not authorized to update this event' });
     }
 
@@ -148,7 +156,7 @@ export const deleteEvent = async (req, res) => {
       return res.status(404).json({ error: 'Event not found' });
     }
 
-    if (existingEvent.organizer_id !== req.user.id && req.user.role !== 'admin') {
+    if (existingEvent.organizer_id !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'superadmin') {
       return res.status(403).json({ error: 'Not authorized to delete this event' });
     }
 

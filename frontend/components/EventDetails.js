@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { format } from 'date-fns'
-import { FiCalendar, FiMapPin, FiDollarSign, FiUser, FiClock, FiTag, FiUsers, FiArrowLeft, FiShare2 } from 'react-icons/fi'
+import { FiCalendar, FiMapPin, FiDollarSign, FiUser, FiClock, FiTag, FiUsers, FiArrowLeft, FiShare2, FiEdit, FiTrash2 } from 'react-icons/fi'
 import { toast } from 'react-toastify'
 import api from '../lib/api'
 import { useAuthStore } from '../store/authStore'
 
 export default function EventDetails({ eventId }) {
   const router = useRouter()
-  const { isAuthenticated } = useAuthStore()
+  const { isAuthenticated, user } = useAuthStore()
   const [event, setEvent] = useState(null)
   const [loading, setLoading] = useState(true)
   const [booking, setBooking] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [tickets, setTickets] = useState(1)
 
   useEffect(() => {
@@ -63,6 +64,39 @@ export default function EventDetails({ eventId }) {
       navigator.clipboard.writeText(window.location.href)
       toast.success('Link copied to clipboard!')
     }
+  }
+
+  const handleEdit = () => {
+    router.push(`/dashboard/edit-event/${eventId}`)
+  }
+
+  const handleDelete = async () => {
+    if (!confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
+      return
+    }
+
+    try {
+      setDeleting(true)
+      await api.delete(`/events/${eventId}`)
+      toast.success('Event deleted successfully!')
+      router.push('/dashboard/event-details')
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Failed to delete event')
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  const canManageEvent = () => {
+    if (!user || !event) return false
+    
+    // Admins and superadmins can manage all events
+    if (user.role === 'admin' || user.role === 'superadmin') return true
+    
+    // Organizers can only manage their own events
+    if (user.role === 'organizer' && event.organizer_id === user.id) return true
+    
+    return false
   }
 
   if (loading) {
@@ -129,9 +163,29 @@ export default function EventDetails({ eventId }) {
               </div>
             )}
             <div className="absolute top-4 right-4 flex gap-2">
+              {canManageEvent() && (
+                <>
+                  <button 
+                    onClick={handleEdit}
+                    className="bg-white/90 backdrop-blur-sm hover:bg-white p-3 rounded-full shadow-lg transition"
+                    title="Edit Event"
+                  >
+                    <FiEdit className="text-blue-600" size={20} />
+                  </button>
+                  <button 
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="bg-white/90 backdrop-blur-sm hover:bg-white p-3 rounded-full shadow-lg transition disabled:opacity-50"
+                    title="Delete Event"
+                  >
+                    <FiTrash2 className="text-red-600" size={20} />
+                  </button>
+                </>
+              )}
               <button 
                 onClick={handleShare}
                 className="bg-white/90 backdrop-blur-sm hover:bg-white p-3 rounded-full shadow-lg transition"
+                title="Share Event"
               >
                 <FiShare2 className="text-primary-600" size={20} />
               </button>
@@ -230,99 +284,85 @@ export default function EventDetails({ eventId }) {
             {/* Sidebar - Booking */}
             <div className="lg:col-span-1">
               <div className="sticky top-8">
-                {event.available_tickets > 0 ? (
-                  <div className="card p-6">
-                    <div className="mb-6">
-                      <div className="flex items-baseline mb-2">
-                        <FiDollarSign className="text-primary-600 mr-1" size={24} />
-                        <span className="text-4xl font-bold text-primary-600">
-                          {event.price === 0 ? 'Free' : event.price}
-                        </span>
-                        {event.price > 0 && <span className="text-gray-600 ml-1">/ ticket</span>}
-                      </div>
-                      <p className="text-sm text-gray-500">
-                        {event.available_tickets < 10 && event.available_tickets > 0 && (
-                          <span className="text-orange-600 font-semibold">Only {event.available_tickets} tickets left!</span>
-                        )}
-                      </p>
+                <div className="card p-6">
+                  <div className="mb-6">
+                    <div className="flex items-baseline mb-2">
+                      <FiDollarSign className="text-primary-600 mr-1" size={24} />
+                      <span className="text-4xl font-bold text-primary-600">
+                        {event.price === 0 ? 'Free' : event.price}
+                      </span>
+                      {event.price > 0 && <span className="text-gray-600 ml-1">/ ticket</span>}
                     </div>
-
+                    <p className="text-sm text-gray-500">
+                      {event.available_tickets < 10 && event.available_tickets > 0 && (
+                        <span className="text-orange-600 font-semibold">Only {event.available_tickets} tickets left!</span>
+                      )}
+                    </p>
+                  </div>
+                  
+                  {event.available_tickets > 0 ? (
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
                           Number of Tickets
                         </label>
-                        <div className="flex items-center border-2 border-gray-200 rounded-lg overflow-hidden">
-                          <button
-                            onClick={() => setTickets(Math.max(1, tickets - 1))}
-                            className="px-4 py-3 bg-gray-100 hover:bg-gray-200 transition font-bold"
-                          >
-                            −
-                          </button>
-                          <input
-                            type="number"
-                            min="1"
-                            max={event.available_tickets}
-                            value={tickets}
-                            onChange={(e) => setTickets(Math.min(event.available_tickets, Math.max(1, parseInt(e.target.value) || 1)))}
-                            className="flex-1 text-center py-3 font-semibold outline-none"
-                          />
-                          <button
-                            onClick={() => setTickets(Math.min(event.available_tickets, tickets + 1))}
-                            className="px-4 py-3 bg-gray-100 hover:bg-gray-200 transition font-bold"
-                          >
-                            +
-                          </button>
-                        </div>
+                        <select
+                          value={tickets}
+                          onChange={(e) => setTickets(parseInt(e.target.value))}
+                          className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent"
+                        >
+                          {[...Array(Math.min(10, event.available_tickets))].map((_, i) => (
+                            <option key={i + 1} value={i + 1}>
+                              {i + 1} {i + 1 === 1 ? 'Ticket' : 'Tickets'}
+                            </option>
+                          ))}
+                        </select>
                       </div>
 
-                      {event.price > 0 && (
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-600">Total</span>
-                            <span className="text-2xl font-bold text-gray-800">
-                              ${(event.price * tickets).toFixed(2)}
-                            </span>
-                          </div>
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <div className="flex justify-between mb-2">
+                          <span className="text-gray-600">Subtotal</span>
+                          <span className="font-semibold">
+                            {event.price === 0 ? 'Free' : `$${(event.price * tickets).toFixed(2)}`}
+                          </span>
                         </div>
-                      )}
+                        <div className="flex justify-between text-lg font-bold">
+                          <span>Total</span>
+                          <span className="text-primary-600">
+                            {event.price === 0 ? 'Free' : `$${(event.price * tickets).toFixed(2)}`}
+                          </span>
+                        </div>
+                      </div>
 
                       <button
                         onClick={handleBooking}
                         disabled={booking}
-                        className="btn-primary w-full py-4 text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full btn-primary py-4 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {booking ? (
-                          <span className="flex items-center justify-center">
-                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
+                          <div className="flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></div>
                             Processing...
-                          </span>
+                          </div>
                         ) : (
                           'Book Now'
                         )}
                       </button>
 
-                      {!isAuthenticated && (
-                        <p className="text-xs text-center text-gray-500">
-                          You'll be asked to login to complete your booking
-                        </p>
-                      )}
+                      <p className="text-xs text-gray-500 text-center">
+                        You won't be charged yet
+                      </p>
                     </div>
-                  </div>
-                ) : (
-                  <div className="card p-6 border-2 border-red-200 bg-red-50">
-                    <div className="text-center">
+                  ) : (
+                    <div className="text-center py-6">
                       <div className="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                         <FiClock className="text-red-600" size={32} />
                       </div>
                       <h3 className="text-xl font-bold text-red-900 mb-2">Sold Out</h3>
                       <p className="text-red-700">All tickets for this event have been sold.</p>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
           </div>

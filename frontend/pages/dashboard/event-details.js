@@ -346,12 +346,6 @@ export default function EventDetailsPage() {
 
                       {/* Action Buttons */}
                       <div className="flex items-center space-x-2 flex-shrink-0">
-                        <button
-                          onClick={() => router.push(`/events/${event.id}`)}
-                          className="px-6 py-2 bg-indigo-900 text-white rounded-lg font-medium hover:bg-indigo-800 transition text-sm"
-                        >
-                          View Details
-                        </button>
                         {(user?.role === 'superadmin' || user?.role === 'admin' || user?.role === 'organizer') && (
                           <>
                             <button
