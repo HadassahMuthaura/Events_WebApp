@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
+import Image from 'next/image'
 import { format } from 'date-fns'
 import { FiCalendar, FiMapPin, FiDollarSign, FiUser, FiClock, FiTag, FiUsers, FiArrowLeft, FiShare2, FiEdit, FiTrash2 } from 'react-icons/fi'
 import { toast } from 'react-toastify'
@@ -152,10 +153,13 @@ export default function EventDetails({ eventId }) {
           {/* Hero Image Section */}
           <div className="relative h-[400px] md:h-[500px] bg-gradient-to-br from-primary-400 via-primary-500 to-primary-700 rounded-2xl overflow-hidden mb-8 shadow-xl">
             {event.image_url ? (
-              <img
+              <Image
                 src={event.image_url}
                 alt={event.title}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-white">

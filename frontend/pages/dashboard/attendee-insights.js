@@ -1,12 +1,45 @@
 import Head from 'next/head'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback, memo } from 'react'
 import { useRouter } from 'next/router'
+import dynamic from 'next/dynamic'
 import DashboardSidebar from '../../components/dashboard/DashboardSidebar'
 import { useAuthStore } from '../../store/authStore'
 import { useSidebar } from '../../contexts/SidebarContext'
-import { AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts'
 import { FiRefreshCw } from 'react-icons/fi'
 import api from '../../lib/api'
+import ChartSkeleton from '../../components/ChartSkeleton'
+
+// Lazy load heavy chart components with loading placeholder
+const AreaChart = dynamic(() => import('recharts').then(mod => mod.AreaChart), { 
+  ssr: false,
+  loading: () => <ChartSkeleton height={350} />
+})
+const Area = dynamic(() => import('recharts').then(mod => mod.Area), { ssr: false })
+const BarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { 
+  ssr: false,
+  loading: () => <ChartSkeleton height={280} />
+})
+const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false })
+const PieChart = dynamic(() => import('recharts').then(mod => mod.PieChart), { 
+  ssr: false,
+  loading: () => <ChartSkeleton height={280} />
+})
+const Pie = dynamic(() => import('recharts').then(mod => mod.Pie), { ssr: false })
+const Cell = dynamic(() => import('recharts').then(mod => mod.Cell), { ssr: false })
+const ResponsiveContainer = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false })
+const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false })
+const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false })
+const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid), { ssr: false })
+const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false })
+const Legend = dynamic(() => import('recharts').then(mod => mod.Legend), { ssr: false })
+const RadarChart = dynamic(() => import('recharts').then(mod => mod.RadarChart), { 
+  ssr: false,
+  loading: () => <ChartSkeleton height={200} />
+})
+const PolarGrid = dynamic(() => import('recharts').then(mod => mod.PolarGrid), { ssr: false })
+const PolarAngleAxis = dynamic(() => import('recharts').then(mod => mod.PolarAngleAxis), { ssr: false })
+const PolarRadiusAxis = dynamic(() => import('recharts').then(mod => mod.PolarRadiusAxis), { ssr: false })
+const Radar = dynamic(() => import('recharts').then(mod => mod.Radar), { ssr: false })
 
 export default function AttendeeInsightsPage() {
   const router = useRouter()
@@ -373,7 +406,7 @@ export default function AttendeeInsightsPage() {
                   <h2 className="text-2xl font-bold text-gray-800">📈 Attendance Trends</h2>
                   <p className="text-sm text-gray-600 mt-1">Monthly ticket sales and booking patterns over time</p>
                 </div>
-                <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-md">
+                <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-md" style={{ minHeight: '410px' }}>
                   <ResponsiveContainer width="100%" height={350}>
                     <AreaChart data={insights.attendanceTrends}>
                       <defs>
@@ -434,7 +467,7 @@ export default function AttendeeInsightsPage() {
                     <h2 className="text-xl font-bold text-gray-800">📊 Popular Event Categories</h2>
                     <p className="text-sm text-gray-600 mt-1">Distribution of bookings across categories</p>
                   </div>
-                  <div className="bg-gradient-to-br from-white to-purple-50 border border-purple-200 rounded-xl p-6 shadow-md">
+                  <div className="bg-gradient-to-br from-white to-purple-50 border border-purple-200 rounded-xl p-6 shadow-md" style={{ minHeight: '340px' }}>
                     <ResponsiveContainer width="100%" height={280}>
                       <RadarChart data={insights.categoryPopularity.map(cat => ({
                         category: cat.category.split(' ')[0], // Shorter labels
@@ -488,7 +521,7 @@ export default function AttendeeInsightsPage() {
                     <h2 className="text-xl font-bold text-gray-800">⏰ Best Time Slots</h2>
                     <p className="text-sm text-gray-600 mt-1">Peak attendance periods throughout the day</p>
                   </div>
-                  <div className="bg-gradient-to-br from-white to-blue-50 border border-blue-200 rounded-xl p-6 shadow-md">
+                  <div className="bg-gradient-to-br from-white to-blue-50 border border-blue-200 rounded-xl p-6 shadow-md" style={{ minHeight: '340px' }}>
                     <ResponsiveContainer width="100%" height={280}>
                       <BarChart data={insights.timeSlotAnalysis}>
                         <defs>
@@ -603,7 +636,7 @@ export default function AttendeeInsightsPage() {
                   </div>
                   
                   {/* Pie Chart for Distribution */}
-                  <div className="mt-6 bg-white rounded-lg p-4">
+                  <div className="mt-6 bg-white rounded-lg p-4" style={{ minHeight: '260px' }}>
                     <h3 className="text-sm font-semibold text-gray-700 mb-3 text-center">Attendee Distribution</h3>
                     <ResponsiveContainer width="100%" height={200}>
                       <PieChart>

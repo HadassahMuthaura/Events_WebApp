@@ -1,10 +1,27 @@
 import Head from 'next/head'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { FiSearch, FiCalendar, FiMapPin, FiUsers, FiFilter } from 'react-icons/fi'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import DashboardSidebar from '../../components/dashboard/DashboardSidebar'
 import { useSidebar } from '../../contexts/SidebarContext'
+import EventCard from '../../components/EventCard'
+import EventCardSkeleton from '../../components/EventCardSkeleton'
+
+// Debounce hook for search optimization
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value)
+  
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value)
+    }, delay)
+    
+    return () => clearTimeout(handler)
+  }, [value, delay])
+  
+  return debouncedValue
+}
 
 export default function EventsPage() {
   const router = useRouter()
@@ -13,6 +30,7 @@ export default function EventsPage() {
   const [filteredEvents, setFilteredEvents] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const debouncedSearchQuery = useDebounce(searchQuery, 300) // Debounce search by 300ms
   const [selectedFilters, setSelectedFilters] = useState({
     category: 'all',
     dateFilter: 'all',
@@ -24,8 +42,8 @@ export default function EventsPage() {
   const [showLocationDropdown, setShowLocationDropdown] = useState(false)
   const [showSortDropdown, setShowSortDropdown] = useState(false)
 
-  const categories = ['conference', 'workshop', 'networking', 'music', 'other']
-  const locations = [...new Set(events.map(e => e.location).filter(Boolean))]
+  const categories = useMemo(() => ['conference', 'workshop', 'networking', 'music', 'other'], [])
+  const locations = useMemo(() => [...new Set(events.map(e => e.location).filter(Boolean))], [events])
 
   useEffect(() => {
     fetchEvents()
@@ -33,7 +51,7 @@ export default function EventsPage() {
 
   useEffect(() => {
     filterEvents()
-  }, [events, searchQuery, selectedFilters])
+  }, [events, debouncedSearchQuery, selectedFilters])
 
   const fetchEvents = async () => {
     try {
@@ -50,11 +68,11 @@ export default function EventsPage() {
     let filtered = [...events]
 
     // Search filter
-    if (searchQuery) {
+    if (debouncedSearchQuery) {
       filtered = filtered.filter(event =>
-        event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.location?.toLowerCase().includes(searchQuery.toLowerCase())
+        event.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        event.description?.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        event.location?.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
       )
     }
 
@@ -363,56 +381,13 @@ export default function EventsPage() {
               {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {Array.from({ length: 8 }).map((_, index) => (
-                    <div key={index} className="bg-gray-200 rounded-xl h-72 animate-pulse"></div>
+                    <EventCardSkeleton key={index} />
                   ))}
                 </div>
               ) : filteredEvents.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {filteredEvents.map((event) => (
-                    <div
-                      key={event.id}
-                      onClick={() => router.push(`/events/${event.id}`)}
-                      className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer"
-                    >
-                      {/* Event Image */}
-                      <div className="relative h-40 overflow-hidden">
-                        <img
-                          src={event.image_url || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=500'}
-                          alt={event.title}
-                          className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                      </div>
-
-                      {/* Event Content */}
-                      <div className="p-4">
-                        <h3 className="text-base font-bold text-gray-800 mb-2 line-clamp-2 min-h-[44px]">
-                          {event.title}
-                        </h3>
-                        
-                        <div className="space-y-1.5 mb-3">
-                          <div className="flex items-center text-xs text-gray-600">
-                            <FiCalendar className="mr-1.5 text-indigo-600" size={14} />
-                            <span>{formatDate(event.date)} • {formatTime(event.date)}</span>
-                          </div>
-                          <div className="flex items-center text-xs text-gray-600">
-                            <FiMapPin className="mr-1.5 text-indigo-600" size={14} />
-                            <span className="line-clamp-1">{event.location || 'TBA'}</span>
-                          </div>
-                        </div>
-
-                        {/* Footer */}
-                        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                          <div className="flex items-center text-xs text-gray-500">
-                            <FiUsers className="mr-1" size={14} />
-                            <span>{event.total_tickets || 0} total tickets</span>
-                          </div>
-                          <div className="text-xs font-semibold text-indigo-900">
-                            {event.price === 0 ? 'Free Event' : `$${event.price}`}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    <EventCard key={event.id} event={event} />
                   ))}
                 </div>
               ) : (
