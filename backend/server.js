@@ -11,6 +11,8 @@ import bookingRoutes from './routes/booking.routes.js';
 import invitationRoutes from './routes/invitation.routes.js';
 import commentRoutes from './routes/comment.routes.js';
 import reviewRoutes from './routes/review.routes.js';
+import scannerRoutes from './routes/scanner.routes.js';
+import insightsRoutes from './routes/insights.routes.js';
 
 // Import services
 import './services/reminder.service.js'; // Initialize cron jobs for event reminders
@@ -55,6 +57,8 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/invitations', invitationRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/scanner', scannerRoutes);
+app.use('/api/insights', insightsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
