@@ -1,12 +1,45 @@
 import Head from 'next/head'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback, memo } from 'react'
 import { useRouter } from 'next/router'
+import dynamic from 'next/dynamic'
 import DashboardSidebar from '../../components/dashboard/DashboardSidebar'
 import { useAuthStore } from '../../store/authStore'
 import { useSidebar } from '../../contexts/SidebarContext'
-import { AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts'
 import { FiRefreshCw } from 'react-icons/fi'
 import api from '../../lib/api'
+import ChartSkeleton from '../../components/ChartSkeleton'
+
+// Lazy load heavy chart components with loading placeholder
+const AreaChart = dynamic(() => import('recharts').then(mod => mod.AreaChart), { 
+  ssr: false,
+  loading: () => <ChartSkeleton height={350} />
+})
+const Area = dynamic(() => import('recharts').then(mod => mod.Area), { ssr: false })
+const BarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { 
+  ssr: false,
+  loading: () => <ChartSkeleton height={280} />
+})
+const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false })
+const PieChart = dynamic(() => import('recharts').then(mod => mod.PieChart), { 
+  ssr: false,
+  loading: () => <ChartSkeleton height={280} />
+})
+const Pie = dynamic(() => import('recharts').then(mod => mod.Pie), { ssr: false })
+const Cell = dynamic(() => import('recharts').then(mod => mod.Cell), { ssr: false })
+const ResponsiveContainer = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false })
+const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false })
+const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false })
+const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid), { ssr: false })
+const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false })
+const Legend = dynamic(() => import('recharts').then(mod => mod.Legend), { ssr: false })
+const RadarChart = dynamic(() => import('recharts').then(mod => mod.RadarChart), { 
+  ssr: false,
+  loading: () => <ChartSkeleton height={200} />
+})
+const PolarGrid = dynamic(() => import('recharts').then(mod => mod.PolarGrid), { ssr: false })
+const PolarAngleAxis = dynamic(() => import('recharts').then(mod => mod.PolarAngleAxis), { ssr: false })
+const PolarRadiusAxis = dynamic(() => import('recharts').then(mod => mod.PolarRadiusAxis), { ssr: false })
+const Radar = dynamic(() => import('recharts').then(mod => mod.Radar), { ssr: false })
 
 export default function AttendeeInsightsPage() {
   const router = useRouter()
@@ -121,7 +154,7 @@ export default function AttendeeInsightsPage() {
         </Head>
         <div className="flex bg-gray-50 min-h-screen">
           <DashboardSidebar />
-          <div className={`${isCollapsed ? 'ml-20' : 'ml-64'} flex-1 p-6 transition-all duration-300`}>
+          <div className={`flex-1 p-4 sm:p-6 transition-all duration-300 ml-0 md:ml-20 lg:${isCollapsed ? 'ml-20' : 'ml-64'}`}>
             <div className="bg-white rounded-3xl p-8 shadow-2xl">
               <div className="flex items-center justify-center h-96">
                 <div className="text-center">
@@ -144,7 +177,7 @@ export default function AttendeeInsightsPage() {
         </Head>
         <div className="flex bg-gray-50 min-h-screen">
           <DashboardSidebar />
-          <div className={`${isCollapsed ? 'ml-20' : 'ml-64'} flex-1 p-6 transition-all duration-300`}>
+          <div className={`flex-1 p-4 sm:p-6 transition-all duration-300 ml-0 md:ml-20 lg:${isCollapsed ? 'ml-20' : 'ml-64'}`}>
             <div className="bg-white rounded-3xl p-8 shadow-2xl">
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <p className="text-red-800">{error}</p>
@@ -164,23 +197,23 @@ export default function AttendeeInsightsPage() {
       <div className="flex bg-gray-50 min-h-screen">
         <DashboardSidebar />
         
-        <div className={`${isCollapsed ? 'ml-20' : 'ml-64'} flex-1 p-6 transition-all duration-300`}>
+        <div className={`flex-1 p-4 sm:p-6 lg:p-8 transition-all duration-300 ml-0 md:ml-20 lg:${isCollapsed ? 'ml-20' : 'ml-64'}`}>
           {/* Main Content Card */}
-          <div className="bg-white rounded-3xl p-8 shadow-2xl">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl">
             {/* Header */}
-            <div className="mb-8">
-              <div className="flex items-start justify-between">
+            <div className="mb-6 sm:mb-8">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div className="flex-1">
-                  <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                  <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
                     📊 Attendee Insights Dashboard
                   </h1>
-                  <p className="text-gray-600">Data-driven analysis of attendance patterns, trends, and engagement metrics</p>
+                  <p className="text-sm sm:text-base text-gray-600">Data-driven analysis of attendance patterns, trends, and engagement metrics</p>
                 </div>
                 
                 {/* Real-time Refresh Controls */}
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-3 w-full sm:w-auto">
                   {lastUpdated && (
-                    <div className="text-right">
+                    <div className="text-right flex-1 sm:flex-none">
                       <div className="text-xs text-gray-500">Last updated</div>
                       <div className="text-sm font-semibold text-gray-700">{formatLastUpdated()}</div>
                     </div>
@@ -188,7 +221,7 @@ export default function AttendeeInsightsPage() {
                   <button
                     onClick={handleManualRefresh}
                     disabled={refreshing}
-                    className="flex items-center space-x-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white px-4 py-2 rounded-lg font-medium shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center justify-center space-x-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white px-3 sm:px-4 py-2 rounded-lg font-medium shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                     title="Refresh data"
                   >
                     <FiRefreshCw className={`${refreshing ? 'animate-spin' : ''}`} size={18} />
@@ -208,7 +241,7 @@ export default function AttendeeInsightsPage() {
 
             {/* Overview Stats - Enhanced */}
             {insights?.overview && (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8 transition-opacity duration-300" style={{ opacity: refreshing ? 0.6 : 1 }}>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4 mb-6 sm:mb-8 transition-opacity duration-300" style={{ opacity: refreshing ? 0.6 : 1 }}>
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 shadow-lg transform hover:scale-105 transition-transform">
                   <div className="text-xs font-medium text-blue-100 mb-1">Total Bookings</div>
                   <div className="text-2xl font-bold text-white">{insights.overview.totalBookings}</div>
@@ -373,7 +406,7 @@ export default function AttendeeInsightsPage() {
                   <h2 className="text-2xl font-bold text-gray-800">📈 Attendance Trends</h2>
                   <p className="text-sm text-gray-600 mt-1">Monthly ticket sales and booking patterns over time</p>
                 </div>
-                <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-md">
+                <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-md" style={{ minHeight: '410px' }}>
                   <ResponsiveContainer width="100%" height={350}>
                     <AreaChart data={insights.attendanceTrends}>
                       <defs>
@@ -434,7 +467,7 @@ export default function AttendeeInsightsPage() {
                     <h2 className="text-xl font-bold text-gray-800">📊 Popular Event Categories</h2>
                     <p className="text-sm text-gray-600 mt-1">Distribution of bookings across categories</p>
                   </div>
-                  <div className="bg-gradient-to-br from-white to-purple-50 border border-purple-200 rounded-xl p-6 shadow-md">
+                  <div className="bg-gradient-to-br from-white to-purple-50 border border-purple-200 rounded-xl p-6 shadow-md" style={{ minHeight: '340px' }}>
                     <ResponsiveContainer width="100%" height={280}>
                       <RadarChart data={insights.categoryPopularity.map(cat => ({
                         category: cat.category.split(' ')[0], // Shorter labels
@@ -488,7 +521,7 @@ export default function AttendeeInsightsPage() {
                     <h2 className="text-xl font-bold text-gray-800">⏰ Best Time Slots</h2>
                     <p className="text-sm text-gray-600 mt-1">Peak attendance periods throughout the day</p>
                   </div>
-                  <div className="bg-gradient-to-br from-white to-blue-50 border border-blue-200 rounded-xl p-6 shadow-md">
+                  <div className="bg-gradient-to-br from-white to-blue-50 border border-blue-200 rounded-xl p-6 shadow-md" style={{ minHeight: '340px' }}>
                     <ResponsiveContainer width="100%" height={280}>
                       <BarChart data={insights.timeSlotAnalysis}>
                         <defs>
@@ -603,7 +636,7 @@ export default function AttendeeInsightsPage() {
                   </div>
                   
                   {/* Pie Chart for Distribution */}
-                  <div className="mt-6 bg-white rounded-lg p-4">
+                  <div className="mt-6 bg-white rounded-lg p-4" style={{ minHeight: '260px' }}>
                     <h3 className="text-sm font-semibold text-gray-700 mb-3 text-center">Attendee Distribution</h3>
                     <ResponsiveContainer width="100%" height={200}>
                       <PieChart>

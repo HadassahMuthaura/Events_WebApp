@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import EventCard from './EventCard'
+import EventCardSkeleton from './EventCardSkeleton'
 import api from '../lib/api'
 import { toast } from 'react-toastify'
 
@@ -41,14 +42,7 @@ export default function EventsList({ searchQuery = '', category = null }) {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-gray-300 h-48 rounded-t-lg"></div>
-                <div className="bg-white p-4 rounded-b-lg shadow-md">
-                  <div className="h-4 bg-gray-300 rounded mb-2"></div>
-                  <div className="h-3 bg-gray-300 rounded mb-2"></div>
-                  <div className="h-3 bg-gray-300 rounded w-2/3"></div>
-                </div>
-              </div>
+              <EventCardSkeleton key={i} />
             ))}
           </div>
         </div>

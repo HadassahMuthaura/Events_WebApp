@@ -127,12 +127,12 @@ export default function EventDetailsPage() {
       <div className="flex bg-gray-50 min-h-screen">
         <DashboardSidebar />
         
-        <div className={`${isCollapsed ? 'ml-20' : 'ml-64'} flex-1 p-6 transition-all duration-300`}>
+        <div className={`flex-1 p-4 sm:p-6 transition-all duration-300 ml-0 md:ml-20 lg:${isCollapsed ? 'ml-20' : 'ml-64'}`}>
           {/* Main Content Card */}
-          <div className="bg-white rounded-3xl p-8 shadow-2xl min-h-screen">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl min-h-screen">
             {/* Header */}
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            <div className="mb-6 sm:mb-8">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
                 {user?.role === 'client' ? 'My Tickets' : 'Event Details'}
               </h1>
               <p className="text-gray-600 mb-6">

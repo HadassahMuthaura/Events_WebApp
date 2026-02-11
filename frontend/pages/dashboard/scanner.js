@@ -174,11 +174,11 @@ export default function TicketScanner() {
       </Head>
       <div className="flex min-h-screen bg-gray-50">
         <DashboardSidebar />
-        <main className={`flex-1 transition-all duration-300 ${isCollapsed ? 'ml-20' : 'ml-64'}`}>
-          <div className="p-8">
+        <main className={`flex-1 transition-all duration-300 ml-0 md:ml-20 lg:${isCollapsed ? 'ml-20' : 'ml-64'}`}>
+          <div className="p-4 sm:p-6 lg:p-8">
             {/* Header */}
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">Ticket Scanner</h1>
+            <div className="mb-6 sm:mb-8">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Ticket Scanner</h1>
               <p className="text-gray-600">Scan tickets to check in attendees</p>
             </div>
 
@@ -220,7 +220,7 @@ export default function TicketScanner() {
 
             {/* Statistics */}
             {statistics && (
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
                 <div className="card p-6">
                   <div className="flex items-center justify-between">
                     <div>

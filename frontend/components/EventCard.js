@@ -1,22 +1,30 @@
 import { format } from 'date-fns'
 import { useRouter } from 'next/router'
+import { memo } from 'react'
+import Image from 'next/image'
 import { FiCalendar, FiMapPin, FiDollarSign } from 'react-icons/fi'
 
-export default function EventCard({ event }) {
+const EventCard = memo(function EventCard({ event }) {
   const router = useRouter()
+
+  const handleClick = () => {
+    router.push(`/events/${event.id}`)
+  }
 
   return (
     <div 
-      onClick={() => router.push(`/events/${event.id}`)}
+      onClick={handleClick}
       className="card hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
     >
         {/* Image */}
         <div className="h-48 bg-gradient-to-r from-primary-400 to-primary-600 relative overflow-hidden">
           {event.image_url ? (
-            <img
+            <Image
               src={event.image_url}
               alt={event.title}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+              fill
+              className="object-cover group-hover:scale-110 transition-transform duration-300"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-white text-4xl">
@@ -61,4 +69,6 @@ export default function EventCard({ event }) {
         </div>
       </div>
   )
-}
+})
+
+export default EventCard

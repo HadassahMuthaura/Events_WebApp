@@ -121,7 +121,7 @@ export default function UsersManagementPage() {
     return (
       <div className="flex bg-gray-50 min-h-screen">
         <DashboardSidebar />
-        <div className={`flex-1 ${isCollapsed ? 'ml-20' : 'ml-64'} transition-all duration-300`}>
+        <div className={`flex-1 transition-all duration-300 ml-0 md:ml-20 lg:${isCollapsed ? 'ml-20' : 'ml-64'}`}>
           <div className="flex items-center justify-center min-h-screen">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
@@ -140,14 +140,14 @@ export default function UsersManagementPage() {
       </Head>
       <div className="flex bg-gray-50 min-h-screen">
         <DashboardSidebar />
-        <div className={`flex-1 ${isCollapsed ? 'ml-20' : 'ml-64'} transition-all duration-300`}>
-          <div className="px-8 py-8">
+        <div className={`flex-1 transition-all duration-300 ml-0 md:ml-20 lg:${isCollapsed ? 'ml-20' : 'ml-64'}`}>
+          <div className="px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold mb-2">User Management</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold mb-2">User Management</h1>
               <p className="text-gray-600">Manage all registered users and their roles</p>
             </div>
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
               <div className="rounded-xl bg-blue-50 p-6 flex items-center gap-4">
                 <div className="flex-1">
                   <p className="text-sm text-gray-600 mb-1">Total Users</p>

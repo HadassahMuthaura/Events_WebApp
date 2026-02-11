@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
+import Image from 'next/image'
 import { format } from 'date-fns'
 import { FiCalendar, FiMapPin, FiDollarSign, FiUser, FiClock, FiTag, FiUsers, FiArrowLeft, FiShare2, FiEdit, FiTrash2 } from 'react-icons/fi'
 import { toast } from 'react-toastify'
@@ -138,7 +139,7 @@ export default function EventDetails({ eventId }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="max-w-6xl mx-auto">
           {/* Back Button */}
           <button 
@@ -150,60 +151,63 @@ export default function EventDetails({ eventId }) {
           </button>
 
           {/* Hero Image Section */}
-          <div className="relative h-[400px] md:h-[500px] bg-gradient-to-br from-primary-400 via-primary-500 to-primary-700 rounded-2xl overflow-hidden mb-8 shadow-xl">
+          <div className="relative h-[300px] sm:h-[400px] md:h-[500px] bg-gradient-to-br from-primary-400 via-primary-500 to-primary-700 rounded-xl sm:rounded-2xl overflow-hidden mb-6 sm:mb-8 shadow-xl">
             {event.image_url ? (
-              <img
+              <Image
                 src={event.image_url}
                 alt={event.title}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-white">
                 <FiCalendar size={80} className="opacity-50" />
               </div>
             )}
-            <div className="absolute top-4 right-4 flex gap-2">
+            <div className="absolute top-4 right-4 flex gap-2 flex-wrap justify-end">
               {canManageEvent() && (
                 <>
                   <button 
                     onClick={handleEdit}
-                    className="bg-white/90 backdrop-blur-sm hover:bg-white p-3 rounded-full shadow-lg transition"
+                    className="bg-white/90 backdrop-blur-sm hover:bg-white p-2 sm:p-3 rounded-full shadow-lg transition"
                     title="Edit Event"
                   >
-                    <FiEdit className="text-blue-600" size={20} />
+                    <FiEdit className="text-blue-600" size={18} />
                   </button>
                   <button 
                     onClick={handleDelete}
                     disabled={deleting}
-                    className="bg-white/90 backdrop-blur-sm hover:bg-white p-3 rounded-full shadow-lg transition disabled:opacity-50"
+                    className="bg-white/90 backdrop-blur-sm hover:bg-white p-2 sm:p-3 rounded-full shadow-lg transition disabled:opacity-50"
                     title="Delete Event"
                   >
-                    <FiTrash2 className="text-red-600" size={20} />
+                    <FiTrash2 className="text-red-600" size={18} />
                   </button>
                 </>
               )}
               <button 
                 onClick={handleShare}
-                className="bg-white/90 backdrop-blur-sm hover:bg-white p-3 rounded-full shadow-lg transition"
+                className="bg-white/90 backdrop-blur-sm hover:bg-white p-2 sm:p-3 rounded-full shadow-lg transition"
                 title="Share Event"
               >
-                <FiShare2 className="text-primary-600" size={20} />
+                <FiShare2 className="text-primary-600" size={18} />
               </button>
             </div>
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 md:p-8">
-              <div className="inline-block bg-primary-600 text-white px-4 py-2 rounded-full text-sm font-semibold mb-3">
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 sm:p-6 md:p-8">
+              <div className="inline-block bg-primary-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold mb-2 sm:mb-3">
                 <FiTag className="inline mr-1" />
                 {event.category}
               </div>
-              <h1 className="text-3xl md:text-5xl font-bold text-white mb-2">{event.title}</h1>
+              <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-2">{event.title}</h1>
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               {/* Event Info Cards */}
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="card p-6 hover:shadow-xl transition">
                   <div className="flex items-start">
                     <div className="bg-primary-100 p-3 rounded-lg mr-4">
