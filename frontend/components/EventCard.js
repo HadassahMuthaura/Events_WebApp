@@ -1,16 +1,22 @@
 import { format } from 'date-fns'
+import { useRouter } from 'next/router'
 import { FiCalendar, FiMapPin, FiDollarSign } from 'react-icons/fi'
 
 export default function EventCard({ event }) {
+  const router = useRouter()
+
   return (
-    <div className="card hover:shadow-xl transition-shadow">
+    <div 
+      onClick={() => router.push(`/events/${event.id}`)}
+      className="card hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
+    >
         {/* Image */}
-        <div className="h-48 bg-gradient-to-r from-primary-400 to-primary-600 relative">
+        <div className="h-48 bg-gradient-to-r from-primary-400 to-primary-600 relative overflow-hidden">
           {event.image_url ? (
             <img
               src={event.image_url}
               alt={event.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-white text-4xl">
@@ -19,6 +25,12 @@ export default function EventCard({ event }) {
           )}
           <div className="absolute top-2 right-2 bg-primary-600 text-white px-3 py-1 rounded-full text-sm">
             {event.category}
+          </div>
+          {/* Hover Overlay */}
+          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+            <div className="bg-white text-primary-600 px-6 py-3 rounded-lg font-semibold transform scale-90 group-hover:scale-100 transition-transform duration-300">
+              View Details & Book
+            </div>
           </div>
         </div>
 

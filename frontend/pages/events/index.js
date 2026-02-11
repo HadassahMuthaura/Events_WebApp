@@ -371,7 +371,8 @@ export default function EventsPage() {
                   {filteredEvents.map((event) => (
                     <div
                       key={event.id}
-                      className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100"
+                      onClick={() => router.push(`/events/${event.id}`)}
+                      className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer"
                     >
                       {/* Event Image */}
                       <div className="relative h-40 overflow-hidden">

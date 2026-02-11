@@ -174,7 +174,7 @@ export const sendEventReminder = async (booking, user, event, hoursUntil) => {
               <p>We're looking forward to seeing you there! Please arrive 15 minutes early.</p>
               
               <center>
-                <a href="${process.env.FRONTEND_URL}/dashboard/my-tickets" class="button">View My Tickets</a>
+                <a href="${process.env.FRONTEND_URL}/dashboard/event-details" class="button">View My Bookings</a>
               </center>
               
               <div class="footer">
@@ -358,9 +358,86 @@ export const sendWelcomeEmail = async (user) => {
   }
 }
 
+// Send password reset email
+export const sendPasswordResetEmail = async (email, name, resetToken) => {
+  try {
+    console.log(`📧 [Email Service] Sending password reset email to ${email}`)
+    const transporter = createTransporter()
+    
+    const resetUrl = `${process.env.FRONTEND_URL}/auth/reset-password/${resetToken}`
+    
+    const mailOptions = {
+      from: `"Events App" <${process.env.EMAIL_FROM || 'noreply@eventsapp.com'}>`,
+      to: email,
+      subject: 'Password Reset Request - Events App',
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+            .reset-box { background: white; padding: 25px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #667eea; }
+            .button { display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+            .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 5px; }
+            .footer { text-align: center; margin-top: 30px; color: #999; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>🔐 Password Reset</h1>
+            </div>
+            <div class="content">
+              <p>Hi ${name},</p>
+              <p>We received a request to reset your password for your Events App account.</p>
+              
+              <div class="reset-box">
+                <p>Click the button below to reset your password:</p>
+                <center>
+                  <a href="${resetUrl}" class="button">Reset Password</a>
+                </center>
+                <p style="margin-top: 15px; font-size: 12px; color: #666;">
+                  Or copy and paste this link into your browser:<br>
+                  <a href="${resetUrl}">${resetUrl}</a>
+                </p>
+              </div>
+              
+              <div class="warning">
+                <strong>⚠️ Important:</strong>
+                <ul style="margin: 10px 0;">
+                  <li>This link will expire in 1 hour</li>
+                  <li>If you didn't request this reset, please ignore this email</li>
+                  <li>Your password will remain unchanged unless you click the link above</li>
+                </ul>
+              </div>
+              
+              <div class="footer">
+                <p>If you're having trouble, contact us at support@eventsapp.com</p>
+                <p>&copy; 2026 Events App. All rights reserved.</p>
+              </div>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+    }
+    
+    const info = await transporter.sendMail(mailOptions)
+    console.log('✅ Password reset email sent:', info.messageId)
+    return info
+  } catch (error) {
+    console.error('❌ Error sending password reset email:', error)
+    return null
+  }
+}
+
 export default {
   sendBookingConfirmation,
   sendEventReminder,
   sendEventInvitation,
   sendWelcomeEmail,
+  sendPasswordResetEmail,
 }

@@ -151,18 +151,19 @@ export const getBookingById = async (req, res) => {
       .from('bookings')
       .select(`
         *,
-        events(title, date, location, category, image_url),
-        users(full_name, email)
+        events:events!bookings_event_id_fkey(title, date, location, category, image_url, venue),
+        users:users!bookings_user_id_fkey(full_name, email)
       `)
       .eq('id', id)
       .single();
 
     if (error || !booking) {
+      console.error('Booking fetch error:', error);
       return res.status(404).json({ error: 'Booking not found' });
     }
 
-    // Check if user owns this booking or is admin
-    if (booking.user_id !== req.user.id && req.user.role !== 'admin') {
+    // Check if user owns this booking or is admin/superadmin
+    if (booking.user_id !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'superadmin') {
       return res.status(403).json({ error: 'Access denied' });
     }
 
