@@ -112,22 +112,22 @@ export default function CreateEventPage() {
       <div className="flex bg-gray-50 min-h-screen">
         <DashboardSidebar />
         
-        <div className={`${isCollapsed ? 'ml-20' : 'ml-64'} flex-1 transition-all duration-300`}>
+        <div className={`flex-1 transition-all duration-300 ml-0 md:ml-20 lg:${isCollapsed ? 'ml-20' : 'ml-64'}`}>
           {/* Simplified Top Navigation Bar with Gradient */}
-          <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 px-8 py-2.5 shadow-lg">
+          <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 px-4 sm:px-6 lg:px-8 py-3 sm:py-2.5 shadow-lg">
             <div className="max-w-7xl mx-auto">
-              <h1 className="text-lg font-bold text-white">Create New Event</h1>
+              <h1 className="text-base sm:text-lg font-bold text-white">Create New Event</h1>
               <p className="text-purple-100 text-xs">Fill in the details below</p>
             </div>
           </div>
 
           {/* Form Content - Matching Wireframe Layout */}
-          <div className="px-6 py-3">
+          <div className="px-3 sm:px-4 lg:px-6 py-3">
             <form onSubmit={handleSubmit} className="max-w-7xl mx-auto">
-              <div className="p-5">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="p-3 sm:p-5">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                   {/* Left Column - Single Container */}
-                  <div className="rounded-lg p-5 space-y-4 shadow-md bg-white">
+                  <div className="rounded-lg p-4 sm:p-5 space-y-4 shadow-md bg-white">
                     {/* Event Name */}
                     <div>
                       <label htmlFor="title" className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
@@ -171,7 +171,7 @@ export default function CreateEventPage() {
                       <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
                         Date Time
                       </label>
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <input
                           type="date"
                           id="date"
@@ -214,8 +214,8 @@ export default function CreateEventPage() {
                   {/* Right Column */}
                   <div className="space-y-4">
                     {/* Top Container - Venue Details (2x2 Grid) */}
-                    <div className="rounded-lg p-5 shadow-md bg-white">
-                      <div className="grid grid-cols-2 gap-4">
+                    <div className="rounded-lg p-4 sm:p-5 shadow-md bg-white">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {/* City */}
                         <div>
                           <label htmlFor="location" className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
@@ -282,8 +282,8 @@ export default function CreateEventPage() {
                     </div>
 
                     {/* Bottom Container - Pricing & Image (2x1 Grid) */}
-                    <div className="rounded-lg p-5 shadow-md bg-white">
-                      <div className="grid grid-cols-2 gap-4">
+                    <div className="rounded-lg p-4 sm:p-5 shadow-md bg-white">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {/* Left - Ticket Price & Total Capacity */}
                         <div className="space-y-4">
                           {/* Ticket Price */}
@@ -348,7 +348,7 @@ export default function CreateEventPage() {
                     </div>
 
                     {/* Action Buttons - Outside containers */}
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <button
                         type="submit"
                         disabled={loading}

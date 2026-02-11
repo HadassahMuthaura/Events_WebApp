@@ -154,7 +154,7 @@ export default function AttendeeInsightsPage() {
         </Head>
         <div className="flex bg-gray-50 min-h-screen">
           <DashboardSidebar />
-          <div className={`${isCollapsed ? 'ml-20' : 'ml-64'} flex-1 p-6 transition-all duration-300`}>
+          <div className={`flex-1 p-4 sm:p-6 transition-all duration-300 ml-0 md:ml-20 lg:${isCollapsed ? 'ml-20' : 'ml-64'}`}>
             <div className="bg-white rounded-3xl p-8 shadow-2xl">
               <div className="flex items-center justify-center h-96">
                 <div className="text-center">
@@ -177,7 +177,7 @@ export default function AttendeeInsightsPage() {
         </Head>
         <div className="flex bg-gray-50 min-h-screen">
           <DashboardSidebar />
-          <div className={`${isCollapsed ? 'ml-20' : 'ml-64'} flex-1 p-6 transition-all duration-300`}>
+          <div className={`flex-1 p-4 sm:p-6 transition-all duration-300 ml-0 md:ml-20 lg:${isCollapsed ? 'ml-20' : 'ml-64'}`}>
             <div className="bg-white rounded-3xl p-8 shadow-2xl">
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <p className="text-red-800">{error}</p>
@@ -197,23 +197,23 @@ export default function AttendeeInsightsPage() {
       <div className="flex bg-gray-50 min-h-screen">
         <DashboardSidebar />
         
-        <div className={`${isCollapsed ? 'ml-20' : 'ml-64'} flex-1 p-6 transition-all duration-300`}>
+        <div className={`flex-1 p-4 sm:p-6 lg:p-8 transition-all duration-300 ml-0 md:ml-20 lg:${isCollapsed ? 'ml-20' : 'ml-64'}`}>
           {/* Main Content Card */}
-          <div className="bg-white rounded-3xl p-8 shadow-2xl">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl">
             {/* Header */}
-            <div className="mb-8">
-              <div className="flex items-start justify-between">
+            <div className="mb-6 sm:mb-8">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div className="flex-1">
-                  <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                  <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
                     📊 Attendee Insights Dashboard
                   </h1>
-                  <p className="text-gray-600">Data-driven analysis of attendance patterns, trends, and engagement metrics</p>
+                  <p className="text-sm sm:text-base text-gray-600">Data-driven analysis of attendance patterns, trends, and engagement metrics</p>
                 </div>
                 
                 {/* Real-time Refresh Controls */}
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-3 w-full sm:w-auto">
                   {lastUpdated && (
-                    <div className="text-right">
+                    <div className="text-right flex-1 sm:flex-none">
                       <div className="text-xs text-gray-500">Last updated</div>
                       <div className="text-sm font-semibold text-gray-700">{formatLastUpdated()}</div>
                     </div>
@@ -221,7 +221,7 @@ export default function AttendeeInsightsPage() {
                   <button
                     onClick={handleManualRefresh}
                     disabled={refreshing}
-                    className="flex items-center space-x-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white px-4 py-2 rounded-lg font-medium shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center justify-center space-x-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white px-3 sm:px-4 py-2 rounded-lg font-medium shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                     title="Refresh data"
                   >
                     <FiRefreshCw className={`${refreshing ? 'animate-spin' : ''}`} size={18} />
@@ -241,7 +241,7 @@ export default function AttendeeInsightsPage() {
 
             {/* Overview Stats - Enhanced */}
             {insights?.overview && (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8 transition-opacity duration-300" style={{ opacity: refreshing ? 0.6 : 1 }}>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4 mb-6 sm:mb-8 transition-opacity duration-300" style={{ opacity: refreshing ? 0.6 : 1 }}>
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 shadow-lg transform hover:scale-105 transition-transform">
                   <div className="text-xs font-medium text-blue-100 mb-1">Total Bookings</div>
                   <div className="text-2xl font-bold text-white">{insights.overview.totalBookings}</div>

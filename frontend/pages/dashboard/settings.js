@@ -252,9 +252,9 @@ export default function Settings() {
 
         <DashboardSidebar />
         
-        <div className={`${isCollapsed ? 'ml-20' : 'ml-64'} flex-1 p-8 transition-all duration-300`}>
+        <div className={`flex-1 p-4 sm:p-8 transition-all duration-300 ml-0 md:ml-20 lg:${isCollapsed ? 'ml-20' : 'ml-64'}`}>
           <div className="max-w-7xl mx-auto">
-            <h1 className="text-3xl font-bold text-gray-800 mb-8">My Profile</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-8">My Profile</h1>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               

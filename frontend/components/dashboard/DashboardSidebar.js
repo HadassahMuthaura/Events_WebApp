@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FiGrid, FiCalendar, FiFileText, FiUsers, FiSettings, FiLogOut, FiMenu, FiX, FiPlus, FiCamera } from 'react-icons/fi'
 import { useAuthStore } from '../../store/authStore'
 import { useSidebar } from '../../contexts/SidebarContext'
@@ -9,6 +9,23 @@ export default function DashboardSidebar() {
   const router = useRouter()
   const { user, logout } = useAuthStore()
   const { isCollapsed, setIsCollapsed } = useSidebar()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false)
+  }, [router.pathname])
+  
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsMobileMenuOpen(false)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const handleLogout = () => {
     logout()
@@ -31,25 +48,59 @@ export default function DashboardSidebar() {
   ]
   
   return (
-    <div className={`${isCollapsed ? 'w-20' : 'w-64'} bg-gradient-to-b from-indigo-900 via-indigo-800 to-indigo-900 text-white flex flex-col h-screen fixed left-0 top-0 shadow-2xl transition-all duration-300 z-50`}>
-      {/* Logo Section with Toggle */}
-      <div className={`p-6 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
-        {!isCollapsed && (
+    <>
+      {/* Mobile Menu Toggle Button */}
+      <button
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="md:hidden fixed top-4 left-4 z-50 p-3 bg-indigo-900 text-white rounded-lg shadow-lg hover:bg-indigo-800 transition-colors"
+        aria-label="Toggle menu"
+      >
+        {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+      </button>
+      
+      {/* Overlay for mobile */}
+      {isMobileMenuOpen && (
+        <div 
+          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <div className={`
+        ${isCollapsed ? 'md:w-20' : 'md:w-64'}
+        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        w-64
+        bg-gradient-to-b from-indigo-900 via-indigo-800 to-indigo-900 text-white 
+        flex flex-col h-screen fixed left-0 top-0 shadow-2xl 
+        transition-all duration-300 z-50
+      `}>
+        {/* Logo Section with Toggle */}
+        <div className={`p-6 flex items-center ${isCollapsed ? 'md:justify-center justify-between' : 'justify-between'}`}>
+          {/* Mobile close button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden p-2 rounded-lg hover:bg-indigo-800 transition-colors"
+          >
+            <FiX size={20} />
+          </button>
+          
+          {!isCollapsed && (
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shadow-lg">
               <div className="w-6 h-6 rounded-full bg-gradient-to-br from-green-400 to-blue-500"></div>
             </div>
             <span className="text-xl font-bold">EventsApp</span>
           </div>
-        )}
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-2 rounded-lg hover:bg-indigo-800 transition-colors flex items-center justify-center"
-          title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
-        >
-          {isCollapsed ? <FiMenu size={20} /> : <FiX size={20} />}
-        </button>
-      </div>
+          )}
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="hidden md:flex p-2 rounded-lg hover:bg-indigo-800 transition-colors items-center justify-center"
+            title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+          >
+            {isCollapsed ? <FiMenu size={20} /> : <FiX size={20} />}
+          </button>
+        </div>
 
       {/* Navigation Menu */}
       <nav className="flex-1 px-4 mt-4">
@@ -114,6 +165,7 @@ export default function DashboardSidebar() {
           )}
         </button>
       </div>
-    </div>
+      </div>
+    </>
   )
 }
