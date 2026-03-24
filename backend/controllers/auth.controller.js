@@ -43,6 +43,7 @@ export const register = async (req, res) => {
         {
           email,
           password: hashedPassword,
+          password_hash: hashedPassword,
           full_name,
           role: 'client'
         }
@@ -57,6 +58,7 @@ export const register = async (req, res) => {
 
     // Remove password from response
     delete newUser.password;
+    delete newUser.password_hash;
 
     // Send welcome email (async, don't wait)
     sendWelcomeEmail(newUser).catch(err => 
@@ -95,7 +97,8 @@ export const login = async (req, res) => {
     }
 
     // Verify password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const storedPasswordHash = user.password || user.password_hash;
+    const isPasswordValid = await bcrypt.compare(password, storedPasswordHash);
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
@@ -105,6 +108,7 @@ export const login = async (req, res) => {
 
     // Remove password from response
     delete user.password;
+    delete user.password_hash;
 
     res.json({
       message: 'Login successful',
@@ -183,7 +187,8 @@ export const changePassword = async (req, res) => {
     }
 
     // Verify current password
-    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    const storedPasswordHash = user.password || user.password_hash;
+    const isPasswordValid = await bcrypt.compare(currentPassword, storedPasswordHash);
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Current password is incorrect' });
     }
@@ -194,7 +199,10 @@ export const changePassword = async (req, res) => {
     // Update password
     const { error: updateError } = await supabase
       .from('users')
-      .update({ password: hashedPassword })
+      .update({
+        password: hashedPassword,
+        password_hash: hashedPassword
+      })
       .eq('id', userId);
 
     if (updateError) throw updateError;
@@ -294,6 +302,7 @@ export const resetPassword = async (req, res) => {
       .from('users')
       .update({ 
         password: hashedPassword,
+        password_hash: hashedPassword,
         reset_token: null,
         reset_token_expiry: null
       })

@@ -40,7 +40,7 @@ export default function EventsList({ searchQuery = '', category = null }) {
     return (
       <div className="bg-white py-12">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {[...Array(8)].map((_, i) => (
               <EventCardSkeleton key={i} />
             ))}
@@ -81,7 +81,7 @@ export default function EventsList({ searchQuery = '', category = null }) {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {events.map(event => (
                 <EventCard key={event.id} event={event} />
               ))}

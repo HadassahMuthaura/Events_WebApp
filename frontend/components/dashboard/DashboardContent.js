@@ -4,6 +4,8 @@ import { FiTrendingUp, FiTrendingDown, FiSearch, FiCalendar, FiBell, FiChevronLe
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { AreaChart, Area, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
+import ChartSkeleton from '../ChartSkeleton'
+import EventCardSkeleton from '../EventCardSkeleton'
 
 export default function DashboardContent() {
   const { user, token } = useAuthStore()
@@ -158,22 +160,16 @@ export default function DashboardContent() {
 
             {/* Charts Skeleton */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 animate-pulse">
-                <div className="h-6 bg-gray-200 rounded w-40 mb-6"></div>
-                <div className="h-80 bg-gray-200 rounded"></div>
-              </div>
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 animate-pulse">
-                <div className="h-6 bg-gray-200 rounded w-32 mb-6"></div>
-                <div className="h-80 bg-gray-200 rounded"></div>
-              </div>
+              <ChartSkeleton height={360} />
+              <ChartSkeleton height={360} />
             </div>
 
             {/* Upcoming Events Skeleton */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 animate-pulse">
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <div className="h-6 bg-gray-200 rounded w-48 mb-6"></div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="h-48 bg-gray-200 rounded-xl"></div>
+                  <EventCardSkeleton key={i} />
                 ))}
               </div>
             </div>

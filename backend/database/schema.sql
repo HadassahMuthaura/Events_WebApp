@@ -4,17 +4,6 @@
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Drop old role constraint if exists and update to support new roles
-DO $$ 
-BEGIN
-    IF EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'users_role_check') THEN
-        ALTER TABLE users DROP CONSTRAINT users_role_check;
-    END IF;
-END $$;
-
--- Update existing users with old role names to new ones
-UPDATE users SET role = 'client' WHERE role = 'user';
-
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -28,6 +17,30 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Ensure required columns exist when users table was created earlier with a different shape
+ALTER TABLE users ADD COLUMN IF NOT EXISTS password VARCHAR(255);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS full_name VARCHAR(255);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(50) DEFAULT 'client';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(20);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+
+-- Backfill defaults for legacy rows before setting stricter constraints
+UPDATE users SET full_name = COALESCE(full_name, 'User') WHERE full_name IS NULL;
+UPDATE users SET password = password_hash WHERE password IS NULL AND password_hash IS NOT NULL;
+UPDATE users SET password_hash = password WHERE password_hash IS NULL AND password IS NOT NULL;
+UPDATE users SET password = COALESCE(password, '') WHERE password IS NULL;
+UPDATE users SET password_hash = COALESCE(password_hash, password, '') WHERE password_hash IS NULL;
+UPDATE users SET role = 'client' WHERE role IS NULL OR role = 'user';
+
+-- Enforce required columns after backfilling
+ALTER TABLE users ALTER COLUMN full_name SET NOT NULL;
+ALTER TABLE users ALTER COLUMN password SET NOT NULL;
+ALTER TABLE users ALTER COLUMN password_hash SET NOT NULL;
+ALTER TABLE users ALTER COLUMN role SET DEFAULT 'client';
+
 -- Add updated role constraint with all roles
 ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;
 ALTER TABLE users ADD CONSTRAINT users_role_check 
@@ -35,9 +48,13 @@ ALTER TABLE users ADD CONSTRAINT users_role_check
 
 -- Insert Super Admin user (hadassahmuthaura54@gmail.com, password: SuperAdmin@2026)
 -- Hash for 'SuperAdmin@2026'
-INSERT INTO users (email, password, full_name, role) VALUES
-('hadassahmuthaura54@gmail.com', '$2a$10$rN8P9qWGM4YqVZZvL6zH4.xKXHxW8pYPvL4zH4xKXHxW8pYPvL4zH4', 'Super Admin', 'superadmin')
-ON CONFLICT (email) DO UPDATE SET role = 'superadmin';
+INSERT INTO users (email, password, password_hash, full_name, role) VALUES
+('hadassahmuthaura54@gmail.com', '$2a$10$TdW./Uaz5hyYLRAX8UaQJOtQGx/3.CmzmvPkKqMApeGXNCFYu2JFy', '$2a$10$TdW./Uaz5hyYLRAX8UaQJOtQGx/3.CmzmvPkKqMApeGXNCFYu2JFy', 'Super Admin', 'superadmin')
+ON CONFLICT (email) DO UPDATE SET
+    role = 'superadmin',
+    password = EXCLUDED.password,
+    password_hash = EXCLUDED.password_hash,
+    full_name = EXCLUDED.full_name;
 
 -- Events table
 CREATE TABLE IF NOT EXISTS events (
